@@ -7,6 +7,7 @@ interface Download {
   status: string
   progress: number
   created_at: number
+  stopped: boolean
 }
 
 const downloads = ref<Download[]>([])
@@ -37,6 +38,10 @@ const requestDownloadStatus = () => {
   }
 }
 
+const onclickCancel = (id: string) => {
+  window.prompt('VERSO::ABORT_DOWNLOAD::' + id)
+}
+
 setInterval(() => {
   requestDownloadStatus()
 }, 2000)
@@ -54,8 +59,13 @@ setInterval(() => {
         <div class="progress-bar">
           <div class="progress" :style="{ width: `${download.progress}%` }"></div>
         </div>
-        <div class="status">
-          {{ download.status }}
+        <div class="status-row">
+          <div class="status">
+            {{ download.status }}
+          </div>
+          <button v-if="!download.stopped" @click="onclickCancel(download.id)" class="cancel-btn">
+            Cancel
+          </button>
         </div>
       </div>
     </div>
@@ -127,11 +137,31 @@ setInterval(() => {
     transition: width 0.3s ease;
   }
 
+  .status-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
   .status {
     color: #9ca3af;
     text-transform: capitalize;
     font-size: 0.875rem;
-    text-align: left;
+  }
+
+  .cancel-btn {
+    padding: 0.25rem 0.75rem;
+    background-color: #dc2626;
+    color: white;
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: #b91c1c;
+    }
   }
 }
 </style>
